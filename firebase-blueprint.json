@@ -1,0 +1,117 @@
+{
+  "entities": {
+    "Gym": {
+      "title": "Gym",
+      "description": "Fitness center in Almaty",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "address": { "type": "string" },
+        "district": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewCount": { "type": "integer" },
+        "monthlyPrice": { "type": "number" },
+        "amenities": { "type": "array", "items": { "type": "string" } },
+        "phone": { "type": "string" },
+        "description": { "type": "string" },
+        "photos": { "type": "array", "items": { "type": "string" } },
+        "workingHours": { "type": "string" },
+        "website": { "type": "string" }
+      },
+      "required": ["name", "latitude", "longitude", "address", "district"]
+    },
+    "User": {
+      "title": "User",
+      "description": "App user document",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "age": { "type": "integer" },
+        "height": { "type": "number" },
+        "weight": { "type": "number" },
+        "gender": { "type": "string" },
+        "goal": { "type": "string" },
+        "activityLevel": { "type": "string" },
+        "experience": { "type": "string" },
+        "daysPerWeek": { "type": "integer" },
+        "injuries": { "type": "string" },
+        "diseases": { "type": "string" },
+        "foodPreferences": { "type": "string" }
+      }
+    },
+    "Favorite": {
+      "title": "Favorite",
+      "description": "User's favorite gym",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "gymId": { "type": "string" }
+      },
+      "required": ["userId", "gymId"]
+    },
+    "AIPlan": {
+      "title": "AI Plan",
+      "description": "Generated training and nutrition plan",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "plan": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "plan", "createdAt"]
+    },
+    "Comparison": {
+      "title": "Comparison",
+      "description": "User's comparison list",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "gymIds": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["userId", "gymIds"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Gym review",
+      "type": "object",
+      "properties": {
+        "gymId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "rating": { "type": "number" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["gymId", "userId", "rating", "text", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/gyms/{gymId}": {
+      "schema": "Gym",
+      "description": "Collection of gyms in Almaty"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/favorites/{favoriteId}": {
+      "schema": "Favorite",
+      "description": "User favorites"
+    },
+    "/ai_plans/{planId}": {
+      "schema": "AIPlan",
+      "description": "AI generated plans"
+    },
+    "/comparisons/{comparisonId}": {
+      "schema": "Comparison",
+      "description": "User comparison lists"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Gym reviews"
+    }
+  }
+}

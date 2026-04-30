@@ -1,0 +1,6 @@
+{
+  "name": "FIT TRACK Almaty",
+  "description": "Smart fitness discovery and AI personal trainer platform for Almaty, Kazakhstan.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}

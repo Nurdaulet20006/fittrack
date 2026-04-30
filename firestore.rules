@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // --- Validation Blueprints ---
+    
+    function isValidGym(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+             data.latitude is number && data.longitude is number &&
+             data.address is string && data.address.size() <= 300 &&
+             data.district is string && data.district.size() <= 100;
+    }
+
+    function isValidUser(data) {
+      return data.email == request.auth.token.email &&
+             (data.age == null || data.age is int) &&
+             (data.weight == null || data.weight is number);
+    }
+
+    function isValidFavorite(data) {
+      return data.userId == request.auth.uid && 
+             isValidId(data.gymId);
+    }
+
+    function isValidAIPlan(data) {
+      return data.userId == request.auth.uid &&
+             data.plan is map &&
+             data.createdAt == request.time;
+    }
+
+    function isValidReview(data) {
+      return data.userId == request.auth.uid &&
+             data.gymId is string &&
+             data.rating >= 1 && data.rating <= 5 &&
+             data.text is string && data.text.size() <= 1000 &&
+             data.createdAt == request.time;
+    }
+
+    // --- Collection Routes ---
+
+    // Gyms: Publicly readable, writeable only by admins (simulated or actual)
+    match /gyms/{gymId} {
+      allow read: if true;
+      allow create, update, delete: if false; // Re-secured
+    }
+
+    // Users: Only owner can read/write
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) && isValidUser(incoming());
+    }
+
+    // Favorites: Only owner can manage
+    match /favorites/{favoriteId} {
+      allow read: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidFavorite(incoming());
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // AI Plans: Only owner can read/write
+    match /ai_plans/{planId} {
+      allow read: if isSignedIn() && (resource == null || existing().userId == request.auth.uid);
+      allow create: if isSignedIn() && isValidAIPlan(incoming());
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Comparisons: Only owner can manage
+    match /comparisons/{comparisonId} {
+      allow read: if isSignedIn() && (resource == null || existing().userId == request.auth.uid);
+      allow write: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    // Reviews: Publicly readable, author can manage
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidReview(incoming());
+      allow update: if isSignedIn() && existing().userId == request.auth.uid && isValidReview(incoming());
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+  }
+}

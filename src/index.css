@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --color-primary: var(--color-blue-600);
+  --color-accent: var(--color-blue-400);
+  --color-success: var(--color-emerald-400);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-200 antialiased;
+  }
+}
+
+@layer components {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .glass-panel {
+    @apply bg-slate-900/50 backdrop-blur-md border border-slate-800 shadow-xl;
+  }
+
+  .card-sleek {
+    @apply bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/80 hover:border-blue-500/50 transition-all rounded-2xl;
+  }
+}
+
+/* Custom Marker Styling */
+.gym-marker {
+  cursor: pointer;
+}
+
+.mapboxgl-popup {
+  z-index: 1000;
+}
